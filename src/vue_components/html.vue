@@ -36,7 +36,7 @@
            <textarea name="addreplies" id="a" cols="30" rows="10" v-model="repliesText"></textarea>
          </li>
          <li>
-           <button @click="replies">回复</button>
+           <button @click="replies(new_topic_info.id)">回复</button>
          </li>
        </ul>
      </div>
@@ -88,7 +88,7 @@ export default {
     // store.dispatch("getUser", this.$route.params.user); //发送用户的id，去获取user的信息
   },
   methods: {
-    replies: function() {
+    replies: function(id) {
       let url = `https://www.vue-js.com/api/v1/topic/${this.new_topic_info
         .id}/replies`;
       console.log("replies", url);
@@ -106,6 +106,8 @@ export default {
         let callbackR = r.data;
         if (!callbackR.success) throw new Error("login fail");
         console.log("reply success");
+        //发布回复
+        store.dispatch("getTopic",id)
       });
     },
     tab: function(text) {
