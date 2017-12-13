@@ -16,17 +16,17 @@ export default {
   name: "collections",
   components: {
     Nav1,
-    CollectionsRight
+    // CollectionsRight
   }
 };
 </script>
 
 <style lang="less" scoped>
-.collections {
-  display: flex;
-  flex-flow: row nowrap;
-  padding-top:40px;
-  justify-content: space-around;
-}
+// .collections {
+//   display: flex;
+//   flex-flow: row nowrap;
+//   padding-top:40px;
+//   justify-content: space-around;
+// }
 </style>
 

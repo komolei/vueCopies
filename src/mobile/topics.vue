@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import store from "../store/store";
+import store from "../store/store_mobile";
 import axios from "axios";
 import { mapGetters } from "vuex";
 

@@ -6,12 +6,16 @@
 - vue Family bucket
 - es6
 - flex layout
+- UI framework -> [vuetify](https://vuetifyjs.com/) -> mobile version
 ## functionalities 
 - basic function:logon/login,reply,new_topic,comment,up,todo...
 ## api
 [link](https://www.vue-js.com/api/)
 ## Build Setup
 
+## preview
+![no ui framework](https://github.com/komolei/vueCopies/blob/master/vue_copies.gif)
+![use ui framework](https://github.com/komolei/vueCopies/blob/master/vue_copies1.gif)
 ``` bash
 # install dependencies
 npm install

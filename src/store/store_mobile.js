@@ -92,14 +92,17 @@ export default new Vuex.Store({
             commit
         }, userId) {
             let url = `https://www.vue-js.com/api/v1/topics?tab=${userId}`
+            let msg = {};
             console.log("url:", url);
             axios.get(url).then(r => {
                 commit('changeData', r.data.data);
                 console.log('result is:', r.data.data);
-            });
+                msg.state = 0;
+            }).catch(err => (msg.state = 1));
             // return axios.get(url)
             // change use vuex save data
             // return axios.get(url)
+            return msg;
         },
         getUser({
             commit

@@ -41,7 +41,7 @@ export default {
 }
 .go_top {
   position: fixed;
-  right: 0px;
+  right: 10px;
   width: 25px;
   top: 60%;
   padding: 4px;

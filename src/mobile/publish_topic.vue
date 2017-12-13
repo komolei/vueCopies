@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import store from "../store/store";
+import store from "../store/store_mobile";
 import { mapState } from "vuex";
 export default {
   name: "publish",

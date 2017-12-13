@@ -1,5 +1,5 @@
 <template>
-  <div class="theme">
+   <div class="theme">
       <ul class="themeBox">
           <li>没有人回复的话题</li>
           <!-- " -->
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import store from "../store/store";
+import store from "../store/store_mobile";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import axios from "axios";
 
@@ -71,5 +71,6 @@ a {
     }
   }
 }
+
 </style>
 

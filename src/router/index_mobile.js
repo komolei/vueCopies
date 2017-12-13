@@ -4,19 +4,24 @@ import animate from "animate.css";
 import 'font-awesome/css/font-awesome.css';
 import HelloWorld from '@/components2/HelloWorld'
 import Toast from '@/components2/toast'
-import Todo from '@/components2/todo';
-import LogInAndOn from '@/vue_components/LogInAndOn';
-import Nav from '@/vue_components/nav';
-import Gotop from '@/vue_components/go_top';
-import Collections from '@/vue_components/collections';
-import Html from '@/vue_components/html';
-import Author from '@/vue_components/author';
-import Newtopic from '@/vue_components/new_topic';
-import Message from '@/vue_components/message';
-import Userindex from '@/vue_components/user_index';
-// import Topics from '@/vue_components/topics';
-// import Theme from '@/vue_components/theme';
+// import Todo from '@/components2/todo';
+import LogInAndOn from '@/mobile/LogInAndOn';
+import Nav from '@/mobile/nav';
+import Gotop from '@/mobile/go_top';
+import Collections from '@/mobile/collections';
+import Html from '@/mobile/html';
+import Author from '@/mobile/author';
+import Newtopic from '@/mobile/new_topic';
+import Message from '@/mobile/message';
+import Userindex from '@/mobile/user_index';
+// import Topics from '@/mobile/topics';
+import Theme from '@/mobile/theme';
+import Vuetify from 'vuetify'
+import Todo from '@/mobile/todo';
 
+// index.js or main.js
+import ('../../node_modules/vuetify/dist/vuetify.min.css')
+Vue.use(Vuetify)
 Vue.use(Router)
     // window.onscroll = Gotop.fix();
 export default new Router({
@@ -24,10 +29,14 @@ export default new Router({
             path: '/',
             name: 'I',
             components: {
-                default: Collections,
+                default: Nav,
                 go_top: Gotop,
                 // author: Author,
             }
+        }, {
+            path: '/loginandon',
+            name: 'loginandon',
+            component: LogInAndOn,
         }, {
             path: '/todo',
             name: 'todo',
@@ -64,6 +73,10 @@ export default new Router({
             path: '/userIndex',
             name: 'userIndex',
             component: Userindex,
+        }, {
+            path: '/theme',
+            name: 'theme',
+            component: Theme,
         }
         // children: [{
         //     path: '',

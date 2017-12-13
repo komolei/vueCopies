@@ -1,61 +1,111 @@
 <template>
-  <nav class="nav">
-      <ul class="nav_bar">
-         <li><span @click="getData(0,'')" class="changeCol">全部</span></li>
-         <li><span @click="getData(1,'good')" >精华</span></li>
-         <li><span @click="getData(2,'weex')" >weex</span></li>
-         <li><span @click="getData(3,'share')">share</span></li>
-         <li><span @click="getData(4,'ask')" >问答</span></li>
-         <li><span @click="getData(5,'job')" >招聘</span></li>
-      </ul> 
-      <div class="ct">
-         <transition name="ct" enter-active-class="animated fadeIn">
-          <ul class="content">
-              <li v-for="(item,index) in items" :key="index">
-                <!-- error 应该导航到用户主页 -->
-                <router-link :to="{name:'userIndex',params:{newId:item.id,user:item.author.loginname}}" class="link">
+<div class="nav" width='100%'>
+  <v-layout row wrap>
+    <v-flex xs12 sm10 offset-sm1>
+      <v-btn-toggle class="text-xs-center">
+        <v-btn flat @click="getData(0,'')">
+          全部
+        </v-btn>
+        <v-btn flat @click="getData(1,'good')">
+          精华
+        </v-btn>
+        <v-btn flat @click="getData(2,'weex')">
+          weex
+        </v-btn>
+        <v-btn flat @click="getData(3,'share')">
+          share
+        </v-btn>
+        <v-btn flat @click="getData(4,'ask')">
+          问答
+        </v-btn>
+        <v-btn flat @click="getData(5,'job')">
+          招聘
+        </v-btn>
+      </v-btn-toggle>
+    </v-flex>
+  </v-layout>
+  <v-layout column nowrap>
 
-                <!-- <a :href="'https://www.vue-js.com/api/v1/user/'+item.author.loginname" class="link"> -->
-                  <img :src="item.author.avatar_url" />
-                <!-- </a> -->
-                </router-link>
-                <span class="reply">{{item.reply_count}}</span><span class="reply1">/{{item.visit_count}}</span>
-                <span class="icon">{{tab(item.top,item.good,item.tab)}}</span>
-                <!-- {{item.id}}:href="'https://www.vue-js.com/api/v1/topic/'+item.id" -->
-                <router-link :to="{name:'html',params:{id:index,newId:item.id,user:item.author.loginname}}" class="link1"><span>{{item.title}}</span></router-link>
-                <span class="time">{{24-new Date(item.last_reply_at).getHours()}}小时前</span>
-              </li>
-          </ul>
-         </transition>
-      </div>
-      <Pager/>
-      <router-view/>
-      <router-view name="a"></router-view>
-  </nav>
- 
+
+
+    <v-flex xs12>
+      <v-list-tile v-for="(item,index) in items" :key="index" class="pt-3">
+        <v-flex xs2 sm1 md1 offset-sm1>
+          <router-link :to="{name:'userIndex',params:{newId:item.id,user:item.author.loginname}}">
+            <v-list-tile-avatar>
+              <img :src="item.author.avatar_url" />
+            </v-list-tile-avatar>
+          </router-link>
+        </v-flex>
+        <v-flex xs2 sm1 md1 caption>
+          <v-list-tile-sub-title>{{item.reply_count}}/{{item.visit_count}}</v-list-tile-sub-title>
+        </v-flex>
+        <v-flex xs2 sm1 md1>
+          <v-list-tile-sub-title class="px-2">{{save(item.top,item.good,item.tab)}}</v-list-tile-sub-title>
+        </v-flex>
+        <v-flex xs5 sm6 md6>
+          <router-link :to="{name:'html',params:{id:index,newId:item.id,user:item.author.loginname}}" class="link1">
+            <v-list-tile-sub-title>{{item.title}}</v-list-tile-sub-title>
+          </router-link>
+        </v-flex>
+        <v-flex xs2 sm1 md1 text-xs-right>
+          <v-list-tile-sub-title xs1>{{24-new Date(item.last_reply_at).getHours()}}小时前</v-list-tile-sub-title>
+        </v-flex>
+      </v-list-tile>
+    </v-flex>
+    <v-flex>
+      <v-progress-circular indeterminate color="grey" :class="{show:arr_bottom}" style="left:50%"></v-progress-circular>
+    </v-flex>
+  </v-layout>
+</div>
 </template>
-
 <script>
-import Pager from "./pager";
-import store from "../store/store";
+import store from "../store/store_mobile";
 import axios from "axios";
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import {
+  mapState,
+  mapGetters,
+  mapMutations,
+  mapActions
+} from "vuex";
 export default {
   name: "nav",
-  components: {
-    Pager
-  },
   data() {
     return {
       items: [],
-      isTrue: false
+      isTrue: false,
+      active: null,
+      index: 20,
+      arr_bottom: false
     };
   },
   computed: {
     ...mapState(["data"])
   },
   methods: {
-    tab: function(top, good, text) {
+    lazy_load: function() {
+      let bottomParams =
+        document.body.offsetHeight -
+        document.documentElement.clientHeight -
+        100;
+      console.log("params", bottomParams);
+      if (window.scrollY >= bottomParams) {
+        this.getPager(this.index);
+        this.index = this.index + 10;
+      }
+    },
+    getPager(index) {
+      console.log("click");
+      let str = `${store.state.tab}&limit=${index}`;
+      // let str = `${store.state.tab}&page=${index}`;
+      store
+        .dispatch("getData", str)
+        .then(
+          r =>
+          r.state == 0 ? (this.arr_bottom = true) : (this.arr_bottom = false)
+        );
+    },
+    save: function(top, good, text) {
       if (top) return "置顶";
       if (good) return "精华";
       text = text.trim();
@@ -77,161 +127,36 @@ export default {
           break;
       }
     },
-    // ...mapMutations(["changeTab"]),
-    // ...mapActions(["getData"]),
     changeColor: function() {
       this.isTrue = true;
     },
     getData: function(index = 0, str = "") {
-      console.log("this str:", str);
-      // store.dispatch("getData", str).then(r => (this.items = r.data.data));
-      //change Vuex save data
       store.dispatch("getData", str);
       this.items = store.state.data;
       store.commit("changeTab", str);
-      console.log("this children:", this.$el.children[0].children);
-
-      //change click el's color
-      Array.from(this.$el.children[0].children).filter(
-        item =>
-          item.children[0].classList.contains("changeCol")
-            ? item.children[0].classList.remove("changeCol")
-            : "xx"
-      );
-      this.$el.children[0].children[index].children[0].classList.add(
-        "changeCol"
-      );
     }
   },
   mounted() {
     this.getData();
+    // this.lazy_load();
   },
 
   beforeUpdate() {
+    window.onscroll = this.lazy_load;
     //驱动数据去更新视图
     this.items = store.state.data;
   }
 };
 </script>
 
-<style lang="less" scoped>
-.changeCol {
-  color: #fff;
-  background-color: #369219;
-}
+<style>
 a {
-  text-decoration: none;
+  text-decoration: none ;
+  color:gray;
+ 
 }
-ul {
-  margin: 0;
-}
-li {
-  list-style: none;
-}
-
-.nav {
-  display: flex;
-  flex-flow: column nowrap;
-  // justify-content: space-around;
-  // padding: 40px;
-  min-width: 650px;
-  max-width: 945px;
-  // flex-grow: 1;
-  .nav_bar {
-    display: flex;
-    flex-direction: column;
-    flex-flow: nowrap;
-    justify-content: flex-start;
-    background-color: #ededed;
-    border-radius: 4px;
-    color: #369219;
-
-    // padding:10px 15px;
-    li {
-      list-style: none;
-      // &:first-of-type > span {
-      //   width: 36px;
-      //   height: 25px;
-      //   line-height: 25px;
-      //   padding: 3px 4px;
-      //   border-radius: 4px;
-      //   color: #fff;
-      //   background-color: #369219;
-      // }
-      span {
-        display: inline-block;
-        width: 36px;
-        height: 25px;
-        line-height: 25px;
-        margin: 5px;
-        padding: 3px 4px;
-        border-radius: 4px;
-        cursor: pointer;
-        // &:hover {
-        //   color: #fff;
-        //   background-color: #369219;
-        // }
-      }
-    }
-  }
-  .ct {
-    .content {
-      li {
-        display: flex;
-        padding: 10px 15px;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #f5f5f5;
-        background: #fff;
-        &:hover {
-          background: #f5f5f5;
-        }
-        span {
-          color: #222;
-        }
-        .link {
-          align-self: flex-end;
-          img {
-            width: 30px;
-            height: 30px;
-          }
-        }
-        .link1 {
-          flex-grow: 10;
-          text-align: left;
-          padding-left: 5px;
-          color: #222;
-          font-weight: normal;
-          font-size: 16px;
-        }
-        .reply {
-          width: 30px;
-          padding: 0 0 0 5px;
-          font-size: 14px;
-          // align-self: flex-start;
-          text-align: right;
-          color: #9e78c0;
-        }
-        .reply1 {
-          width: 30px;
-          padding-right: 10px;
-          font-size: 10px;
-          color: #ccc;
-          text-align: left;
-        }
-        .icon {
-          background-color: #369219;
-          color: #fff;
-          border-radius: 4px;
-          padding: 3px;
-          font-size: 10px;
-        }
-        .time {
-          font-size: 10px;
-        }
-      }
-    }
-  }
+a:link{
+  color:blueviolet;
 }
 </style>
 

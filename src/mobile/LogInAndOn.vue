@@ -1,61 +1,72 @@
 <template>
-<transition enter-active-class="animated fadeIn" >
-<div class="logInAndOn">
-  <header> 
-    <span @click="changeState_1">logOn</span>
-    <span @click="changeState_1">logIn</span>
-   
-  </header>
+<transition enter-active-class="animated fadeIn">
+  <div class="logInAndOn">
+    <header>
+      <span @click="changeState_1">logOn</span>
+      <span @click="changeState_1">logIn</span>
+    </header>
 
-  <body>
-    <transition name="logIn" enter-active-class="animated zoomIn" :duration="{ enter: 2000}">
-      <div class="login" v-if="isShow">
-        <div>
-          <label for="name"><i class="fa fa-user fa-fw"></i></label>
-          <input type="text" id="name" placeholder="name" v-model.trim="userInfo.name" required="required" autocomplete="on">
+    <body>
+      <transition name="logIn" enter-active-class="animated zoomIn" :duration="{ enter: 2000}">
+        <div class="login" v-if="isShow">
+          <div>
+            <label for="name"><i class="fa fa-user fa-fw"></i></label>
+            <input type="text" id="name" placeholder="name" v-model.trim="userInfo.name" required="required" autocomplete="on">
+          </div>
+          <div>
+            <label for="pwd"><i class="fa fa-key fa-fw"></i></label>
+            <input type="password" name="pwd" id="pwd" v-model.trim="userInfo.password" required="required">
+          </div>
+          <div>
+            <label for="surepwd"><i class="fa fa-key fa-fw"></i></label>
+            <input type="password" name="surepwd" id="surepwd" v-model.trim="userInfo.surepassword" @keyup.enter="surepassword" required="required">
+          </div>
+          <div>
+            <label for="email"><i class="fa fa-envelope-o fa-fw"></i></label>
+            <input type="email" name="email" id="email" v-model.trim="userInfo.email" @keyup.tab="surepassword" required="required" autocomplete="on">
+          </div>
+          <button @click="btnState"><i class="fa fa-check" :class="{'fa-spinner':isSubmit,'fa-pulse':isSubmit}"></i></button>
         </div>
-        <div>
-          <label for="pwd"><i class="fa fa-key fa-fw"></i></label>
-          <input type="password" name="pwd" id="pwd" v-model.trim="userInfo.password" required="required" >
-        </div>
-        <div>
-          <label for="surepwd"><i class="fa fa-key fa-fw"></i></label>
-          <input type="password" name="surepwd" id="surepwd" v-model.trim="userInfo.surepassword" @keyup.enter="surepassword"  required="required" >
-        </div>
-        <div>
-          <label for="email"><i class="fa fa-envelope-o fa-fw"></i></label>
-          <input type="email" name="email" id="email" v-model.trim="userInfo.email" @keyup.tab="surepassword" required="required" autocomplete="on">
-        </div>
-        <button @click="btnState"><i class="fa fa-check" :class="{'fa-spinner':isSubmit,'fa-pulse':isSubmit}"></i></button>
-      </div>
-    </transition>
-    <transition name="logOn" enter-active-class="animated zoomIn" :duration="{enter:2000}">
-      <div class="logon" v-if="!isShow">
-        <div>
-          <label for="name"><i class="fa fa-user fa-fw"></i></label>
-          <input type="text" id="name" placeholder="access_token" v-model.trim="userInfo.accesstoken" required="required" autocomplete="on" >
-        </div>
-        <!-- <div>
+      </transition>
+      <transition name="logOn" enter-active-class="animated zoomIn" :duration="{enter:2000}">
+        <div class="logon" v-if="!isShow">
+          <div>
+            <label for="name"><i class="fa fa-user fa-fw"></i></label>
+            <input type="text" id="name" placeholder="access_token" v-model.trim="userInfo.accesstoken" required="required" autocomplete="on">
+          </div>
+          <!-- <div>
           <label for="pwd"><i class="fa fa-key fa-fw"></i></label>
           <input type="password" name="pwd" id="pwd" required="required" >
         </div> -->
-       <button @click="btnState1"><i class="fa fa-check" :class="{'fa-spinner':isSubmit,'fa-pulse':isSubmit}"></i></button>
-      </div>
-    </transition>
-  </body>
-</div>
+          <button @click="btnState1"><i class="fa fa-check" :class="{'fa-spinner':isSubmit,'fa-pulse':isSubmit}"></i></button>
+        </div>
+      </transition>
+    </body>
+    <div class="alert">
+      <v-alert color="error" icon="info" dismissible v-model="alert">
+        please login first!
+      </v-alert>
+    </div>
+  </div>
 </transition>
 </template>
 
 <script>
 import axios from "axios";
 import Router from "vue-router";
-import store from "../store/store";
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import store from "../store/store_mobile";
+import {
+  mapState,
+  mapGetters,
+  mapMutations,
+  mapActions
+} from "vuex";
 export default {
   name: "LogInAndOn",
   data() {
     return {
+      alert: true,
+      items: ["logon", "login"],
       userInfo: {
         accesstoken: "aabfed3e-4c7e-4a3b-8bcc-cda2ae17df53"
       },
@@ -84,7 +95,9 @@ export default {
           this.isShow = true;
           this.isSubmit = false;
           // setTimeout(() => {
-          this.$router.push({ path: "html" });
+          this.$router.push({
+            path: "html"
+          });
           // }, 1000);
         })
         .catch(err => console.log(err));
@@ -102,10 +115,15 @@ export default {
           store.commit("changeAccesstoken", this.userInfo.accesstoken);
           // store.dispatch("changeState", false); //error 是action,看清楚。。。
           store.commit("changeState", false);
+          
           store.dispatch("getMessageCount");
           // store.dispatch("getTopic", callbackR.id);
           // 固定登录用户名
-          store.state.username =callbackR.loginname;
+          store.state.username = callbackR.loginname;
+          this.$router.push({
+            path: "/"
+          });
+          this.alert=false;
         })
         .then(r => {
           this.isShow = false;
@@ -129,15 +147,24 @@ export default {
 
 
 <style lang="less" scoped>
+.alert {
+  padding: 0;
+  // margin-top:20px;
+  &>div {
+    margin: 0;
+    background: #FF5252;
+  }
+}
+
 .logInAndOn {
-  max-width: 290px;
-  min-width: 220px;
-  max-height: 180px;
+  // max-width: 290px;
+  // min-width: 220px;
+  // max-height: 180px;
+  text-align: center;
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 2px 2px 15px 5px #ccc;
-  background-color: #fff;
-  // margin: 0 auto;
+  background-color: #fff; // margin: 0 auto;
   cursor: pointer;
   div {
     padding: 4px 0;

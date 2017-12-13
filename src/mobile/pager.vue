@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import store from "../store/store";
+import store from "../store/store_mobile";
 export default {
   name: "pager",
   data() {
